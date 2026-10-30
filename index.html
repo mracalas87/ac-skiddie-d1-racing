@@ -3,6 +3,14 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no, viewport-fit=cover">
+<meta name="mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<meta name="apple-mobile-web-app-title" content="Skiddie D1">
+<meta name="theme-color" content="#0b0c0e">
+<link rel="manifest" href="manifest.webmanifest">
+<link rel="apple-touch-icon" href="icon-180.png">
+<link rel="icon" type="image/png" href="icon-192.png">
 <title>Skiddie D1 Racing</title>
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Chakra+Petch:ital,wght@0,500;0,700;1,700&display=swap">
 <style>
@@ -412,6 +420,30 @@ button.card { position: relative; }
 #homeCar::before { content: ''; position: absolute; right: 100%; top: 40%; width: 180px; height: 22%; background: linear-gradient(270deg, rgba(225,22,29,.7), transparent); filter: blur(2px); }
 @keyframes drive { from { transform: translateX(-340px); } to { transform: translateX(calc(100vw + 60px)); } }
 @media (prefers-reduced-motion: reduce) { #home::before, #homeCar { animation: none; } #homeCar { display: none; } }
+
+/* ---------- Fit every screen to the display: no scrolling anywhere ---------- */
+.panel { overflow: hidden; }
+#qList, #stList { max-height: none; overflow: visible; }
+#pitPanel {
+  overflow: hidden; --pt: calc(env(safe-area-inset-top, 0px) + 84px); top: var(--pt);
+  max-height: calc(100vh - var(--pt) - env(safe-area-inset-bottom, 0px) - 12px);
+  max-height: calc(100dvh - var(--pt) - env(safe-area-inset-bottom, 0px) - 12px);
+}
+@media (max-height: 460px) { #pitPanel { --pt: calc(env(safe-area-inset-top, 0px) + 8px); } }
+/* once the tyre is chosen, only the crew message and the questions are needed */
+#pitPanel.asking #pitOpts, #pitPanel.asking #pitFix, #pitPanel.asking > .k { display: none; }
+@media (max-height: 520px) {
+  .panel { padding-block: 10px; gap: 8px; }
+  h1 { font-size: clamp(34px, 9vw, 64px); }
+  .panel p { font-size: 14px; line-height: 1.3; }
+  button { font-size: 16px; padding: 9px 16px; }
+  #setup h2 { font-size: 26px; }
+  #pitPanel { padding: 10px; gap: 6px; }
+  #pitQt { font-size: 16px; } #pitQo button { font-size: 20px; padding: 8px 4px; }
+}
+#fsBtn { background: #2a2d31; color: var(--cream); border: 2px solid #4a4e54; font-size: 16px; padding: 10px 18px; }
+#fsBtn:hover { background: #34383d; }
+#fsHint { font-size: 14px; color: #aeb2b8; }
 </style>
 </head>
 <body>
@@ -472,6 +504,8 @@ button.card { position: relative; }
   <div class="k">DEVICE</div>
   <div id="devOpts"></div>
   <button id="startBtn">Start</button>
+  <button id="fsBtn" type="button" hidden>Full screen</button>
+  <p id="fsHint" hidden></p>
   <div id="homeCar" aria-hidden="true"></div>
 </div>
 
@@ -2017,6 +2051,7 @@ var TRACKS = [
     return '<svg class="tyreic" viewBox="0 0 40 40" aria-hidden="true"><circle cx="20" cy="20" r="18" fill="#17181a"/><circle cx="20" cy="20" r="12.5" fill="none" stroke="' + COMP[id].col + '" stroke-width="5"/><circle cx="20" cy="20" r="4.5" fill="#8d9298"/></svg>';
   }
   function showPitPanel() {
+    el.pitPanel.classList.remove('asking'); el.pitPanel.scrollTop = 0;
     el.pitPanel.hidden = false; pitPanelOpen = true; el.pitOpts.innerHTML = '';
     var rec = recommendComp(player);
     ['soft', 'medium', 'hard', 'wet'].forEach(function (id, n) {
@@ -2061,9 +2096,10 @@ var TRACKS = [
     if (needMix(player) && player.used[id]) { say('Use a different compound', 'bad', 1.5); return; }
     p.newComp = id; p.chosen = true; p.t = 0; p.fix = fixSel && player.dmg > 0.05; p.svc = 0.5; el.pitFix.disabled = true; pitQs.n = 0; pitQs.tot = p.fix ? 5 : 3; pitQs.done = false; pitQNext();
     var bs = el.pitOpts.children; for (var i = 0; i < bs.length; i++) bs[i].disabled = true;
+    el.pitPanel.classList.add('asking'); el.pitPanel.scrollTop = 0;
   }
   function updatePitInfo(p) { if (!pitQs.done) { el.pitInfo.textContent = 'Crew waiting. Answer all ' + pitQs.tot + ' correctly to leave.'; return; } el.pitInfo.textContent = 'Fitting ' + COMP[p.newComp].name + ' tyres: ' + Math.max(0, p.svc - p.t).toFixed(1) + 's' + (p.fix ? ' + body repair' : ''); }
-  function hidePit() { el.pitPanel.hidden = true; pitPanelOpen = false; pitQs.on = false; document.getElementById('pitQ').hidden = true; }
+  function hidePit() { el.pitPanel.classList.remove('asking'); el.pitPanel.hidden = true; pitPanelOpen = false; pitQs.on = false; document.getElementById('pitQ').hidden = true; }
   function togglePit() {
     if (state !== 'race' || !player.launched || player.pit || player.finished) return;
     player.pitReq = !player.pitReq;
@@ -2781,5 +2817,69 @@ var TRACKS = [
 })();
 </script>
 
+<script>
+/* Fit every screen to the display, shrinking its contents instead of scrolling */
+(function () {
+  var timer = 0;
+  function fit(p) {
+    var kids = [].slice.call(p.children), s = 1, i;
+    if (p.hidden) { p._fk = ''; return; }
+    var key = p.clientWidth + 'x' + p.clientHeight + '|' + p.childElementCount + '|' + p.textContent.length;
+    if (p._fk === key) return;
+    kids.forEach(function (k) { k.style.zoom = ''; });
+    if (p.scrollHeight > p.clientHeight + 1) {
+      for (i = 0; i < 8; i++) {
+        s = Math.max(0.4, s * (p.clientHeight / p.scrollHeight) * 0.99);
+        kids.forEach(function (k) { k.style.zoom = s; });
+        if (p.scrollHeight <= p.clientHeight + 1 || s <= 0.4) break;
+      }
+    }
+    p._fk = p.clientWidth + 'x' + p.clientHeight + '|' + p.childElementCount + '|' + p.textContent.length;
+  }
+  function fitAll() { [].slice.call(document.querySelectorAll('.panel, #pitPanel')).forEach(fit); }
+  function soon() { clearTimeout(timer); timer = setTimeout(fitAll, 60); }
+  window.addEventListener('resize', soon);
+  window.addEventListener('orientationchange', function () { setTimeout(function () { [].slice.call(document.querySelectorAll('.panel, #pitPanel')).forEach(function (p) { p._fk = ''; }); soon(); }, 250); });
+  [].slice.call(document.querySelectorAll('.panel, #pitPanel')).forEach(function (p) {
+    new MutationObserver(soon).observe(p, { subtree: true, childList: true, attributes: true, attributeFilter: ['hidden', 'class'] });
+  });
+  soon();
+})();
+
+/* Full screen: a button where the browser allows it, and a hint for iPhone, which does not */
+(function () {
+  var b = document.getElementById('fsBtn'), hint = document.getElementById('fsHint');
+  if (!b || !hint) return;
+  var de = document.documentElement, ua = navigator.userAgent;
+  var req = de.requestFullscreen || de.webkitRequestFullscreen;
+  var standalone = (window.matchMedia && (matchMedia('(display-mode: fullscreen)').matches || matchMedia('(display-mode: standalone)').matches)) || navigator.standalone;
+  var iphone = /iPhone|iPod/.test(ua);
+  var ios = iphone || /iPad/.test(ua) || (navigator.platform === 'MacIntel' && navigator.maxTouchPoints > 1);
+  if (standalone) return;
+  function isFs() { return !!(document.fullscreenElement || document.webkitFullscreenElement); }
+  function label() { b.textContent = isFs() ? 'Exit full screen' : 'Full screen'; }
+  function homeHint() {
+    hint.textContent = ios ? 'For full screen with no address bar: tap Share, then Add to Home Screen, then open Skiddie D1 from your home screen.'
+      : 'For full screen, use your browser menu and choose Install or Add to Home Screen.';
+    hint.hidden = false;
+  }
+  if (req && !iphone) {
+    b.hidden = false; label();
+    b.addEventListener('click', function () {
+      try {
+        if (isFs()) { (document.exitFullscreen || document.webkitExitFullscreen).call(document); return; }
+        var r = req.call(de);
+        var lock = function () { try { if (screen.orientation && screen.orientation.lock) screen.orientation.lock('landscape').catch(function () {}); } catch (e) {} };
+        if (r && r.then) r.then(lock, homeHint); else lock();
+      } catch (e) { homeHint(); }
+    });
+    document.addEventListener('fullscreenchange', label);
+    document.addEventListener('webkitfullscreenchange', label);
+    if (ios) homeHint();
+  } else {
+    homeHint();
+  }
+})();
+</script>
 </body>
 </html>
