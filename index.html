@@ -432,6 +432,7 @@ button.card { position: relative; }
 /* once the tyre is chosen, only the crew message and the questions are needed */
 #pitPanel.asking #pitOpts, #pitPanel.asking #pitFix, #pitPanel.asking > .k { display: none; }
 #fsHint { font-size: 14px; color: #aeb2b8; }
+#goRace[disabled]::before { content: 'Pick your tyres first \00b7  '; }
 
 /* ---------- Short screens (a phone held sideways): compact layouts so nothing needs scrolling ---------- */
 @media (max-height: 520px) {
@@ -464,6 +465,8 @@ button.card { position: relative; }
   #gpWx { grid-column: 1 / -1; }
   #wxOpts, #fcOpts, #lapOpts, #carOpts, #diffOpts, #ghostOpts, #qualOpts { grid-template-columns: repeat(auto-fit, minmax(0, 1fr)); grid-auto-flow: column; gap: 4px; min-width: 0; }
   #setup button.opt, #setup button.tyre { min-width: 0; overflow: hidden; }
+  #setup button b { font-size: 11px !important; letter-spacing: 0 !important; }
+  #setup .req { display: none; }
   #wxOpts button.opt span { display: none; }
   #kTy { grid-column: 1; } #tyOpts { grid-column: 2 / -1; }
   #tyOpts { grid-template-columns: repeat(4, minmax(0, 1fr)); gap: 4px; }
@@ -505,7 +508,7 @@ button.card { position: relative; }
   #mxQ { font-size: 34px; padding: 0; }
   #mxPips i { width: 14px; height: 7px; } #mxPips b { font-size: 14px; }
   #mxOpts { grid-template-columns: repeat(4, 1fr); gap: 6px; }
-  #mxOpts button { font-size: 22px; padding: 6px 4px; }
+  #mxOpts button { font-size: 22px; padding: 6px 4px; justify-content: center; }
   #mxMsg { min-height: 16px; font-size: 12px; }
   #mxLvl { display: grid; gap: 4px; } #mxLvl button { padding: 3px 4px; } #mxLvl button b { font-size: 11px; }
 
@@ -530,7 +533,7 @@ button.card { position: relative; }
   #pitPanel { padding: 8px; gap: 4px; width: min(580px, calc(100% - 24px)); }
   #pitOpts, #tyOpts { grid-template-columns: repeat(4, 1fr); gap: 4px; }
   #pitQ { margin-top: 2px; gap: 4px; }
-  #pitQt { font-size: 15px; } #pitQo button { font-size: 20px; padding: 6px 4px; }
+  #pitQt { font-size: 15px; } #pitQo button { font-size: 20px; padding: 6px 4px; justify-content: center; }
 }
 </style>
 </head>
