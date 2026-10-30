@@ -421,29 +421,115 @@ button.card { position: relative; }
 @keyframes drive { from { transform: translateX(-340px); } to { transform: translateX(calc(100vw + 60px)); } }
 @media (prefers-reduced-motion: reduce) { #home::before, #homeCar { animation: none; } #homeCar { display: none; } }
 
-/* ---------- Fit every screen to the display: no scrolling anywhere ---------- */
-.panel { overflow: hidden; }
-#qList, #stList { max-height: none; overflow: visible; }
+/* ---------- Pit panel: always fits the screen height ---------- */
 #pitPanel {
-  overflow: hidden; --pt: calc(env(safe-area-inset-top, 0px) + 84px); top: var(--pt);
+  --pt: calc(env(safe-area-inset-top, 0px) + 84px); top: var(--pt);
+  overflow-y: auto; overscroll-behavior: contain; touch-action: pan-y;
   max-height: calc(100vh - var(--pt) - env(safe-area-inset-bottom, 0px) - 12px);
   max-height: calc(100dvh - var(--pt) - env(safe-area-inset-bottom, 0px) - 12px);
 }
 @media (max-height: 460px) { #pitPanel { --pt: calc(env(safe-area-inset-top, 0px) + 8px); } }
 /* once the tyre is chosen, only the crew message and the questions are needed */
 #pitPanel.asking #pitOpts, #pitPanel.asking #pitFix, #pitPanel.asking > .k { display: none; }
-@media (max-height: 520px) {
-  .panel { padding-block: 10px; gap: 8px; }
-  h1 { font-size: clamp(34px, 9vw, 64px); }
-  .panel p { font-size: 14px; line-height: 1.3; }
-  button { font-size: 16px; padding: 9px 16px; }
-  #setup h2 { font-size: 26px; }
-  #pitPanel { padding: 10px; gap: 6px; }
-  #pitQt { font-size: 16px; } #pitQo button { font-size: 20px; padding: 8px 4px; }
-}
-#fsBtn { background: #2a2d31; color: var(--cream); border: 2px solid #4a4e54; font-size: 16px; padding: 10px 18px; }
-#fsBtn:hover { background: #34383d; }
 #fsHint { font-size: 14px; color: #aeb2b8; }
+
+/* ---------- Short screens (a phone held sideways): compact layouts so nothing needs scrolling ---------- */
+@media (max-height: 520px) {
+  .panel { padding: 6px max(14px, env(safe-area-inset-left, 0px)) 6px max(14px, env(safe-area-inset-right, 0px)); gap: 5px; }
+  h1 { font-size: clamp(30px, 8vw, 54px); }
+  .panel p { font-size: 12px; line-height: 1.25; }
+  .k { font-size: 10px; }
+  #carSel h2, #menu h2, #setup h2, #gpSetup h2, #modeSel h2 { font-size: 20px; padding-left: 8px; border-left-width: 4px; }
+  .big { font-size: 28px; }
+  .byrow .by { font-size: 12px !important; }
+
+  /* the yellow and outline buttons: small */
+  button:not(.opt):not(.tyre):not(.card):not(.arr):not(#box):not(#rev):not(#launch):not(.pad) {
+    padding: 6px 14px !important; font-size: 13px !important; letter-spacing: .06em !important; box-shadow: 0 2px 0 #8a5a00 !important;
+  }
+  button.alt:not(.opt):not(.arr) { padding: 5px 12px !important; font-size: 12px !important; box-shadow: 0 2px 0 rgba(0,0,0,.45) !important; }
+  #fsBtn { background: #2a2d31 !important; color: var(--cream) !important; border: 2px solid #4a4e54 !important; box-shadow: none !important; text-shadow: none !important; }
+  button.opt, button.tyre { display: flex; align-items: center; flex-wrap: wrap; gap: 2px 5px; padding: 5px 8px; font-size: 11px; }
+  button.opt b, button.tyre b { font-size: 12px; }
+  button.opt span, button.tyre span { display: none; }
+  #wxOpts button.opt span { display: inline; font-size: 10px; }
+  .tyreic, .wxic { width: 18px; height: 18px; }
+  .arr { width: 34px; height: 34px; font-size: 13px; }
+
+  /* race setup: label and options side by side, two settings per row */
+  #setup { display: grid; grid-template-columns: auto 1fr auto 1fr; gap: 4px 10px; align-content: center; align-items: center; }
+  #setup > * { max-width: none; margin: 0; }
+  #setup .k { white-space: normal; max-width: 92px; line-height: 1.1; }
+  #setTrk { grid-column: 1 / 3; }
+  #setup h2 { grid-column: 3 / 5; text-align: right; border-left: 0; padding-left: 0; box-shadow: none; }
+  #gpWx { grid-column: 1 / -1; }
+  #wxOpts, #fcOpts, #lapOpts, #carOpts, #diffOpts, #ghostOpts, #qualOpts { grid-template-columns: repeat(auto-fit, minmax(46px, 1fr)); gap: 4px; }
+  #tyOpts { grid-template-columns: repeat(4, 1fr); gap: 4px; }
+  #wxNote { grid-column: 1 / -1; font-size: 10px !important; line-height: 1.2; }
+  #goRace { grid-column: 1 / 4; } #setBack { grid-column: 4 / 5; }
+
+  /* track menu: all eight tracks on one screen */
+  #menu > * { max-width: none; }
+  #grid { grid-template-columns: repeat(4, 1fr); gap: 6px; max-width: none; }
+  #grid .card { padding: 4px 6px; }
+  #grid .card canvas { height: 44px; width: 100%; object-fit: contain; }
+  #grid .cn { font-size: 12px; } #grid .cs { font-size: 10px; }
+
+  /* car select: showroom and rail on the left, stats and buttons on the right */
+  #carSel { display: grid; grid-template-columns: 1.15fr 1fr; gap: 4px 14px; align-content: center; align-items: center; }
+  #carSel > * { max-width: none; margin: 0; }
+  #carSel h2 { grid-column: 1 / -1; }
+  #showroom { grid-column: 1; grid-row: 2 / 5; height: 96px; max-width: none; }
+  #carWrap { grid-column: 1; grid-row: 5; }
+  #carRail { padding: 2px calc(50% - 38px); gap: 8px; }
+  .cc { width: 76px; }
+  #carDots { display: none; }
+  #carStats { grid-column: 2; grid-row: 2 / 4; gap: 4px; }
+  #carGo { grid-column: 2; grid-row: 4; } #carBack { grid-column: 2; grid-row: 5; }
+
+  /* how to play: card on the left, buttons on the right */
+  #howto { display: grid; grid-template-columns: 1fr 150px; gap: 5px 12px; align-content: center; }
+  #howto > * { max-width: none; margin: 0; }
+  #hwStep { grid-column: 1 / -1; }
+  #hwCard { grid-column: 1; grid-row: 2 / 4; padding: 8px 12px; min-height: 0; }
+  #hwImg svg { max-height: 56px; margin-bottom: 4px; }
+  #hwTitle { font-size: 18px; margin-bottom: 2px; }
+  #hwText { font-size: 13px !important; line-height: 1.3; }
+  #hwDots { grid-column: 1; grid-row: 4; }
+  #hwNext { grid-column: 2; grid-row: 2; align-self: end; } #hwSkip { grid-column: 2; grid-row: 3; align-self: start; }
+
+  /* maths question: four answers in one row */
+  #maths > * { max-width: 640px; }
+  #mxQ { font-size: 34px; padding: 0; }
+  #mxPips i { width: 14px; height: 7px; } #mxPips b { font-size: 14px; }
+  #mxOpts { grid-template-columns: repeat(4, 1fr); gap: 6px; }
+  #mxOpts button { font-size: 22px; padding: 6px 4px; }
+  #mxMsg { min-height: 16px; font-size: 12px; }
+  #mxLvl { display: grid; gap: 4px; } #mxLvl button { padding: 3px 4px; } #mxLvl button b { font-size: 11px; }
+
+  /* grand prix setup */
+  #gpSetup { display: grid; grid-template-columns: auto 1fr; gap: 4px 12px; align-content: center; align-items: center; }
+  #gpSetup > * { max-width: none; margin: 0; }
+  #gpSetup h2, #gpSetup > button { grid-column: 1 / -1; }
+  #gpSetup p.small { display: none; }
+  #gpLapOpts, #gpCarOpts, #gpDiffOpts { grid-template-columns: repeat(auto-fit, minmax(60px, 1fr)); gap: 4px; }
+
+  /* result tables: two columns */
+  #resList, .tbl { grid-auto-flow: column; grid-template-rows: repeat(6, auto); grid-auto-columns: minmax(0, 1fr); column-gap: 14px; font-size: 11px; gap: 2px 14px; }
+  #qList, #stList { max-height: none; overflow: visible; }
+  #finish { display: grid; grid-template-columns: 1fr 1.4fr; gap: 3px 14px; align-content: center; }
+  #finish > * { max-width: none; margin: 0; }
+  #finish > button { grid-column: 1 / -1; }
+  #resList { grid-column: 2; grid-row: 1 / 8; }
+  #lapList { grid-column: 2; }
+  #finish .big { font-size: 24px; }
+
+  /* pit stop */
+  #pitPanel { padding: 8px; gap: 4px; width: min(580px, calc(100% - 24px)); }
+  #pitOpts, #tyOpts { grid-template-columns: repeat(4, 1fr); gap: 4px; }
+  #pitQ { margin-top: 2px; gap: 4px; }
+  #pitQt { font-size: 15px; } #pitQo button { font-size: 20px; padding: 6px 4px; }
+}
 </style>
 </head>
 <body>
@@ -2816,36 +2902,7 @@ var TRACKS = [
   requestAnimationFrame(frame);
 })();
 </script>
-
 <script>
-/* Fit every screen to the display, shrinking its contents instead of scrolling */
-(function () {
-  var timer = 0;
-  function fit(p) {
-    var kids = [].slice.call(p.children), s = 1, i;
-    if (p.hidden) { p._fk = ''; return; }
-    var key = p.clientWidth + 'x' + p.clientHeight + '|' + p.childElementCount + '|' + p.textContent.length;
-    if (p._fk === key) return;
-    kids.forEach(function (k) { k.style.zoom = ''; });
-    if (p.scrollHeight > p.clientHeight + 1) {
-      for (i = 0; i < 8; i++) {
-        s = Math.max(0.4, s * (p.clientHeight / p.scrollHeight) * 0.99);
-        kids.forEach(function (k) { k.style.zoom = s; });
-        if (p.scrollHeight <= p.clientHeight + 1 || s <= 0.4) break;
-      }
-    }
-    p._fk = p.clientWidth + 'x' + p.clientHeight + '|' + p.childElementCount + '|' + p.textContent.length;
-  }
-  function fitAll() { [].slice.call(document.querySelectorAll('.panel, #pitPanel')).forEach(fit); }
-  function soon() { clearTimeout(timer); timer = setTimeout(fitAll, 60); }
-  window.addEventListener('resize', soon);
-  window.addEventListener('orientationchange', function () { setTimeout(function () { [].slice.call(document.querySelectorAll('.panel, #pitPanel')).forEach(function (p) { p._fk = ''; }); soon(); }, 250); });
-  [].slice.call(document.querySelectorAll('.panel, #pitPanel')).forEach(function (p) {
-    new MutationObserver(soon).observe(p, { subtree: true, childList: true, attributes: true, attributeFilter: ['hidden', 'class'] });
-  });
-  soon();
-})();
-
 /* Full screen: a button where the browser allows it, and a hint for iPhone, which does not */
 (function () {
   var b = document.getElementById('fsBtn'), hint = document.getElementById('fsHint');
