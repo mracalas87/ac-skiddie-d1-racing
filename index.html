@@ -522,11 +522,13 @@ button.card { position: relative; }
   /* result tables: two columns */
   #resList, .tbl { grid-auto-flow: column; grid-template-rows: repeat(6, auto); grid-auto-columns: minmax(0, 1fr); column-gap: 14px; font-size: 11px; gap: 2px 14px; }
   #qList, #stList { max-height: none; overflow: visible; }
-  #finish { display: grid; grid-template-columns: minmax(0, 1fr) minmax(0, 1.4fr); gap: 3px 14px; align-content: center; }
+  /* finish screen: stats on the left, results in the middle, buttons on the right */
+  #finish { display: grid; grid-template-columns: minmax(0, 1fr) minmax(0, 1.5fr) 140px; gap: 3px 12px; align-content: center; }
   #finish > * { max-width: none; margin: 0; }
-  #finish > button { grid-column: 1 / -1; }
-  #resList { grid-column: 2; grid-row: 1 / 8; }
-  #lapList { grid-column: 2; }
+  #finish > :not(button):not(#resList):not(#lapList) { grid-column: 1; }
+  #finish > button { grid-column: 3; }
+  #finish #resList { grid-column: 2; grid-row: 1 / 8; grid-auto-flow: row; grid-template-rows: none; grid-template-columns: minmax(0, 1fr); gap: 1px; }
+  #finish #lapList { grid-column: 2; grid-row: 8; }
   #finish .big { font-size: 24px; }
 
   /* pit stop */
