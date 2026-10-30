@@ -526,9 +526,10 @@ button.card { position: relative; }
   #finish { display: grid; grid-template-columns: minmax(0, 1fr) minmax(0, 1.5fr) 140px; gap: 3px 12px; align-content: center; }
   #finish > * { max-width: none; margin: 0; }
   #finish > :not(button):not(#resList):not(#lapList) { grid-column: 1; }
-  #finish > button { grid-column: 3; }
+  #finish > button { grid-column: 3; align-self: start; }
   #finish #resList { grid-column: 2; grid-row: 1 / 8; grid-auto-flow: row; grid-template-rows: none; grid-template-columns: minmax(0, 1fr); gap: 1px; }
-  #finish #lapList { grid-column: 2; grid-row: 8; }
+  #finish #lapList { display: none; }
+  #resList div, .tbl div { padding-block: 1px !important; line-height: 1.15; }
   #finish .big { font-size: 24px; }
 
   /* pit stop */
