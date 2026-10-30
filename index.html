@@ -435,7 +435,7 @@ button.card { position: relative; }
 
 /* ---------- Short screens (a phone held sideways): compact layouts so nothing needs scrolling ---------- */
 @media (max-height: 520px) {
-  .panel { padding: 6px max(14px, env(safe-area-inset-left, 0px)) 6px max(14px, env(safe-area-inset-right, 0px)); gap: 5px; }
+  .panel { overflow-x: hidden; padding: 6px max(14px, env(safe-area-inset-left, 0px)) 6px max(14px, env(safe-area-inset-right, 0px)); gap: 5px; }
   h1 { font-size: clamp(30px, 8vw, 54px); }
   .panel p { font-size: 12px; line-height: 1.25; }
   .k { font-size: 10px; }
@@ -452,31 +452,33 @@ button.card { position: relative; }
   button.opt, button.tyre { display: flex; align-items: center; flex-wrap: wrap; gap: 2px 5px; padding: 5px 8px; font-size: 11px; }
   button.opt b, button.tyre b { font-size: 12px; }
   button.opt span, button.tyre span { display: none; }
-  #wxOpts button.opt span { display: inline; font-size: 10px; }
-  .tyreic, .wxic { width: 18px; height: 18px; }
+    .tyreic, .wxic { width: 18px; height: 18px; }
   .arr { width: 34px; height: 34px; font-size: 13px; }
 
   /* race setup: label and options side by side, two settings per row */
-  #setup { display: grid; grid-template-columns: auto 1fr auto 1fr; gap: 4px 10px; align-content: center; align-items: center; }
+  #setup { display: grid; grid-template-columns: auto minmax(0, 1fr) auto minmax(0, 1fr); gap: 4px 10px; align-content: center; align-items: center; }
   #setup > * { max-width: none; margin: 0; }
   #setup .k { white-space: normal; max-width: 92px; line-height: 1.1; }
   #setTrk { grid-column: 1 / 3; }
   #setup h2 { grid-column: 3 / 5; text-align: right; border-left: 0; padding-left: 0; box-shadow: none; }
   #gpWx { grid-column: 1 / -1; }
-  #wxOpts, #fcOpts, #lapOpts, #carOpts, #diffOpts, #ghostOpts, #qualOpts { grid-template-columns: repeat(auto-fit, minmax(46px, 1fr)); gap: 4px; }
-  #tyOpts { grid-template-columns: repeat(4, 1fr); gap: 4px; }
-  #wxNote { grid-column: 1 / -1; font-size: 10px !important; line-height: 1.2; }
+  #wxOpts, #fcOpts, #lapOpts, #carOpts, #diffOpts, #ghostOpts, #qualOpts { grid-template-columns: repeat(auto-fit, minmax(0, 1fr)); grid-auto-flow: column; gap: 4px; min-width: 0; }
+  #setup button.opt, #setup button.tyre { min-width: 0; overflow: hidden; }
+  #wxOpts button.opt span { display: none; }
+  #kTy { grid-column: 1; } #tyOpts { grid-column: 2 / -1; }
+  #tyOpts { grid-template-columns: repeat(4, minmax(0, 1fr)); gap: 4px; }
+  #wxNote { grid-column: 1 / -1; font-size: 10px !important; line-height: 1.2; display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; overflow: hidden; }
   #goRace { grid-column: 1 / 4; } #setBack { grid-column: 4 / 5; }
 
   /* track menu: all eight tracks on one screen */
   #menu > * { max-width: none; }
-  #grid { grid-template-columns: repeat(4, 1fr); gap: 6px; max-width: none; }
+  #grid { grid-template-columns: repeat(4, minmax(0, 1fr)); gap: 6px; max-width: none; }
   #grid .card { padding: 4px 6px; }
   #grid .card canvas { height: 44px; width: 100%; object-fit: contain; }
   #grid .cn { font-size: 12px; } #grid .cs { font-size: 10px; }
 
   /* car select: showroom and rail on the left, stats and buttons on the right */
-  #carSel { display: grid; grid-template-columns: 1.15fr 1fr; gap: 4px 14px; align-content: center; align-items: center; }
+  #carSel { display: grid; grid-template-columns: minmax(0, 1.15fr) minmax(0, 1fr); gap: 4px 14px; align-content: center; align-items: center; }
   #carSel > * { max-width: none; margin: 0; }
   #carSel h2 { grid-column: 1 / -1; }
   #showroom { grid-column: 1; grid-row: 2 / 5; height: 96px; max-width: none; }
@@ -488,7 +490,7 @@ button.card { position: relative; }
   #carGo { grid-column: 2; grid-row: 4; } #carBack { grid-column: 2; grid-row: 5; }
 
   /* how to play: card on the left, buttons on the right */
-  #howto { display: grid; grid-template-columns: 1fr 150px; gap: 5px 12px; align-content: center; }
+  #howto { display: grid; grid-template-columns: minmax(0, 1fr) 150px; gap: 5px 12px; align-content: center; }
   #howto > * { max-width: none; margin: 0; }
   #hwStep { grid-column: 1 / -1; }
   #hwCard { grid-column: 1; grid-row: 2 / 4; padding: 8px 12px; min-height: 0; }
@@ -508,7 +510,7 @@ button.card { position: relative; }
   #mxLvl { display: grid; gap: 4px; } #mxLvl button { padding: 3px 4px; } #mxLvl button b { font-size: 11px; }
 
   /* grand prix setup */
-  #gpSetup { display: grid; grid-template-columns: auto 1fr; gap: 4px 12px; align-content: center; align-items: center; }
+  #gpSetup { display: grid; grid-template-columns: auto minmax(0, 1fr); gap: 4px 12px; align-content: center; align-items: center; }
   #gpSetup > * { max-width: none; margin: 0; }
   #gpSetup h2, #gpSetup > button { grid-column: 1 / -1; }
   #gpSetup p.small { display: none; }
@@ -517,7 +519,7 @@ button.card { position: relative; }
   /* result tables: two columns */
   #resList, .tbl { grid-auto-flow: column; grid-template-rows: repeat(6, auto); grid-auto-columns: minmax(0, 1fr); column-gap: 14px; font-size: 11px; gap: 2px 14px; }
   #qList, #stList { max-height: none; overflow: visible; }
-  #finish { display: grid; grid-template-columns: 1fr 1.4fr; gap: 3px 14px; align-content: center; }
+  #finish { display: grid; grid-template-columns: minmax(0, 1fr) minmax(0, 1.4fr); gap: 3px 14px; align-content: center; }
   #finish > * { max-width: none; margin: 0; }
   #finish > button { grid-column: 1 / -1; }
   #resList { grid-column: 2; grid-row: 1 / 8; }
